@@ -253,18 +253,13 @@ change the input if required as per user input
 do changes in input if required
 """
 
-# Streamlit UI
 st.title("Agentic AI Assistant")
-
-# Session state init
 if "messages" not in st.session_state:
     st.session_state.messages = [
         {"role": "system", "content": SYSTEM_PROMPT}
     ]
 if "project_created" not in st.session_state:
     st.session_state.project_created = False
-
-# Show full conversation history
 for msg in st.session_state.messages:
     if msg["role"] == "user":
         with st.chat_message("user"):
@@ -278,18 +273,14 @@ for msg in st.session_state.messages:
         except Exception:
             pass
 
-# Chat input
 user_query = st.chat_input("Enter your instruction (e.g., create a vite app):")
 
 if user_query:
-    # 1. Store user message
     st.session_state.messages.append({"role": "user", "content": user_query})
-
-    # 2. Show it instantly in UI
     with st.chat_message("user"):
         st.markdown(user_query)
 
-    st.session_state.project_created = False  # Reset for new flow
+    st.session_state.project_created = False
 
     while True:
         response = client.chat.completions.create(
@@ -303,13 +294,9 @@ if user_query:
 
         step = parsed_response.get("step")
         content = parsed_response.get("content")
-
-        # Display assistant response
         if step in ["result"]:
             with st.chat_message("assistant"):
                 st.markdown(f"**Mayank AI**: {content}")
-
-        # Handle tool execution
         if step == "action":
             tool_name = parsed_response.get("function")
             tool_input = parsed_response.get("input")
